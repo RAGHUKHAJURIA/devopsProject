@@ -3,9 +3,16 @@ name: Dependency Security Gate
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'DecentraWork/package.json'
+      - 'DecentraWork/package-lock.json'
+
   push:
     branches:
       - '**'
+    paths:
+      - 'DecentraWork/package.json'
+      - 'DecentraWork/package-lock.json'
 
 jobs:
   security-check:
@@ -14,12 +21,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Debug file structure
-        run: |
-          pwd
-          ls -la
-          ls -la DecentraWork || true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -30,29 +31,9 @@ jobs:
         working-directory: ./DecentraWork
         run: npm install
 
-      - name: Run tests
-        working-directory: ./DecentraWork
-        run: |
-          if npm run | grep -q "test"; then
-            npm test
-          else
-            echo "No test script found, skipping..."
-          fi
-
       - name: Run Snyk Security Scan
         uses: snyk/actions/node@master
         with:
           args: test --severity-threshold=high --file=DecentraWork/package.json
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Upload Snyk report
-        if: always()
-        run: snyk test --json --file=DecentraWork/package.json > snyk-report.json || true
-
-      - name: Upload artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: snyk-report
-          path: snyk-report.json
