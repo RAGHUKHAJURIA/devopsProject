@@ -3,10 +3,14 @@ name: Dependency Security Gate
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - '**'   # runs on push to ANY branch
 
 jobs:
   security-check:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./DecentraWork
@@ -15,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node (change if needed)
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -23,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests (optional but recommended)
+      - name: Run tests
         run: npm test
 
       - name: Run Snyk Security Scan
