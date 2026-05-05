@@ -28,8 +28,8 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        working-directory: ./DecentraWork
         run: npm install
+        working-directory: ./DecentraWork
 
       - name: Run Snyk Security Scan
         uses: snyk/actions/node@master
