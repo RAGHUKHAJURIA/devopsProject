@@ -19,21 +19,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: ./DecentraWork
 
       - name: Run Snyk Security Scan
-        uses: snyk/actions/node@master
+        uses: snyk/actions/node@v3
         with:
-          args: test --severity-threshold=high --file=DecentraWork/package.json
+          args: test --severity-threshold=high --file=DecentraWork/package.json --prune-repeated-subdependencies
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
